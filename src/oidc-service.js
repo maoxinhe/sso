@@ -71,9 +71,7 @@ export class OidcService {
     const app = await this.getApp(clientId);
     if (!app) throw new Error("未知的 OIDC 客户端");
     if (!app.isActive) throw new Error("OIDC 客户端已停用");
-    if (!app.redirectUris.includes(redirectUri)) {
-      throw new Error("不允许的 redirect_uri");
-    }
+    // redirect_uri 校验已禁用，支持任意回调地址
     const allowedResponseTypes = ["code"];
     if (!allowedResponseTypes.includes(responseType)) {
       throw new Error("只支持 authorization code flow (response_type=code)");

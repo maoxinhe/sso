@@ -546,6 +546,67 @@ export function renderAccount({ user, issuer, sessions, flash }) {
   return layout({ title: "我的账号", activeNav: "account", user, issuer, content });
 }
 
+// ============ AList SSO Integration ============
+export function renderAListSSO({ user, issuer, clientId, clientSecret, config }) {
+  const content = `
+    <div class="alert info">
+      <strong>AList 单点登录配置</strong><br>
+      将以下配置复制到 AList 管理后台 → 设置 → 认证 → OIDC 中即可完成对接。
+    </div>
+    <div class="card">
+      <h3>AList OIDC 配置参数</h3>
+      <div class="kv">
+        <div class="k">OIDC 名称</div>
+        <div><code>SSO</code></div>
+
+        <div class="k">Client ID</div>
+        <div><code class="monospace" style="word-break:break-all">${escapeHtml(clientId)}</code></div>
+
+        <div class="k">Client Secret</div>
+        <div><code class="monospace" style="word-break:break-all">${escapeHtml(clientSecret)}</code></div>
+
+        <div class="k">Authorization URL</div>
+        <div><code class="monospace" style="word-break:break-all">${escapeHtml(issuer)}/authorize</code></div>
+
+        <div class="k">Token URL</div>
+        <div><code class="monospace" style="word-break:break-all">${escapeHtml(issuer)}/token</code></div>
+
+        <div class="k">Userinfo URL</div>
+        <div><code class="monospace" style="word-break:break-all">${escapeHtml(issuer)}/userinfo</code></div>
+
+        <div class="k">Redirect URL</div>
+        <div><code class="monospace" style="word-break:break-all">你的AList地址/api/auth/oidc/callback</code></div>
+
+        <div class="k">Scopes</div>
+        <div><code>openid email profile</code></div>
+
+        <div class="k">用户映射字段</div>
+        <div><code>sub → sub, email → email, name → name</code></div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h3>AList 配置步骤</h3>
+      <ol style="line-height:2;color:var(--text)">
+        <li>登录 AList 管理后台</li>
+        <li>进入 <strong>设置</strong> → <strong>认证</strong> → <strong>OIDC</strong></li>
+        <li>将上方参数填入对应字段</li>
+        <li><strong>Redirect URL</strong> 填写：<code class="monospace">https://你的AList地址/api/auth/oidc/callback</code></li>
+        <li>保存配置，退出 AList 账号</li>
+        <li>在 AList 登录页面点击 <strong>OIDC 登录</strong> 即可通过 SSO 登录</li>
+      </ol>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h3>注意事项</h3>
+      <ul style="line-height:2;color:var(--text)">
+        <li>确保 AList 版本支持 OIDC 认证（v3.25.0+）</li>
+        <li>如果 AList 没有 OIDC 选项，可使用 <strong>OAuth2</strong> 类型，参数相同</li>
+        <li>首次使用 OIDC 登录的 SSO 用户会自动在 AList 中创建账号</li>
+        <li>SSO 管理员会自动成为 AList 管理员（需在 AList 中手动设置）</li>
+      </ul>
+    </div>`;
+  return layout({ title: "AList SSO 配置", activeNav: "", user, issuer, content });
+}
+
 // ============ Utilities ============
 export function escapeHtml(value) {
   return String(value ?? "")

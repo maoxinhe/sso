@@ -4,6 +4,7 @@ import { OidcService, parsePrivateJwk } from "./oidc-service.js";
 import {
   renderDashboard, renderUsers, renderUserForm, renderApps, renderAppForm,
   renderInvites, renderInviteForm, renderAudit, renderAccount, escapeHtml,
+  renderAListSSO,
 } from "./admin-ui.js";
 import { randomUrlSafe } from "./crypto.js";
 
@@ -65,6 +66,11 @@ export function createApp({ store, config, env, turnstileFetch = (...args) => gl
         }
         if (request.method === "GET" && url.pathname === "/userinfo") {
           return await handleUserInfo(request, oidc, config);
+        }
+
+        // ---------- AList One-Click SSO ----------
+        if (request.method === "GET" && url.pathname === "/alist-sso") {
+          return handleAListSSO(request, auth, config);
         }
 
         // ---------- Legacy API endpoints (admin bearer auth) ----------
@@ -984,6 +990,28 @@ function json(body, init = {}) {
 
 function redirectResponse(location) {
   return new Response(null, { status: 302, headers: new Headers({ location }) });
+}
+
+// ============================================================
+// AList SSO Integration
+// ============================================================
+async function handleAListSSO(request, auth, config) {
+  const ctx = await auth.getSessionFromRequest(request);
+  if (!ctx?.user) {
+    return redirectResponse("/admin-login?redirect=" + encodeURIComponent("/alist-sso"));
+  }
+
+  const issuer = config.issuer;
+  const clientId = config.legacyClientId || "";
+  const clientSecret = config.legacyClientSecret || "";
+
+  return html(renderAListSSO({
+    user: ctx.user,
+    issuer,
+    clientId,
+    clientSecret,
+    config,
+  }));
 }
 
 function oauthError(error, description, status) {
