@@ -3,11 +3,7 @@ main = "src/index.js"
 compatibility_date = "2026-06-08"
 keep_vars = true
 
-# 本檔可提交，但不要保存真實 D1 database_id 或 [vars]。
-# 使用 Cloudflare Dashboard 部署時，請在 Dashboard 設定 DB 這個 D1 binding。
-# 使用 Wrangler CLI 部署時，請在本機或 CI 生成臨時設定檔並填入真實 database_id。
-#
-# [[d1_databases]]
-# binding = "DB"
-# database_name = "openai_oidc_sso"
-# database_id = "00000000-0000-0000-0000-000000000000"
+[[d1_databases]]
+binding = "DB"
+database_name = "openai_oidc_sso"
+database_id = "cb274273-7299-4305-a1d9-a58253488e64"
